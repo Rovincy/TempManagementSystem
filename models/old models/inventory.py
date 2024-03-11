@@ -15,6 +15,10 @@ class ItemName(Enum):
     COFFEE = 'Coffee'
     SPONGES = 'Sponges'
     SUNSCREEN = 'Sunscreen'
+    
+    def Item_Prices(self):
+        """Returns the various prices of the items"""
+        print("")
 
 
 class Inventory(db.Model):
