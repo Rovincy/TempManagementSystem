@@ -1,17 +1,25 @@
-from api.v1.app import db
+"""Employee Model"""
 
-class Employee(db.Model):
-    __tablename__ = 'Employee'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    position = db.Column(db.String(100), nullable=False)
-    date_of_employment = db.Column(db.DateTime, nullable=False)
-    salary = db.Column(db.Float, nullable=False)
-    address = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.String(100), nullable=False)
-    reservations = db.relationship('Reservation', backref='employee', lazy=True)
+from sqlalchemy import Column, String, Integer, DateTime, Float
+from sqlalchemy.orm import relationship
+import uuid
+
+from models.Base import Base, BaseModel
+
+
+class Employee(BaseModel, Base):
+    __tablename__ = 'Employees'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False)
+    position = Column(String(100), nullable=False)
+    date_of_employment = Column(DateTime, nullable=False)
+    salary = Column(Float, nullable=False)
+    address = Column(String(100), nullable=False)
+    phone = Column(String(100), nullable=False)
+    role = Column(String(100), nullable=False)
+    reservations = relationship('Reservation', backref='employee', lazy=True)
+
 
     def __str__(self):
         return f'<Employee {self.name}>'

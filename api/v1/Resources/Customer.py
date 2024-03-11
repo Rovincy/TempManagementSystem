@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import Resource, abort, marshal_with, reqparse
 from models.customer import Customer
-from api.v1.app import api
+from models import storage
 
 
 customer_post_args = reqparse.RequestParser()
@@ -15,6 +15,8 @@ customer_post_args.add_argument('status', type=str, required=True, help='Status 
 
 class CustomerResource(Resource):
     def post(self, customer_id=None):
+        if customer_id:
+            abort(400, message="Customer ID must not be provided for post request.")
         args = customer_post_args.parse_args()
         customer_obj = Customer(
             first_name=args['first_name'],
@@ -25,17 +27,21 @@ class CustomerResource(Resource):
             status=args['status']
         )
         # save customer to database
+        storage.new(customer_obj)
+        storage.save()
+
         return jsonify(customer_obj), 201
 
-    def get(self, customer_id):
-        customer = Customer.query.filter_by(id=customer_id).first()
-        if not customer:
-            abort(404, message="Customer not found")
-        return jsonify(customer)
+    def get(self, customer_id=None):
+        if not customer_id:
+            return self.get_all()
+        return self.get_customer_by_id(customer_id)
 
-    def put(self, customer_id):
+    def put(self, customer_id=None):
+        if not customer_id:
+            abort(400, message="Customer ID must be provided for put request.")
         args = customer_post_args.parse_args()
-        customer = Customer.query.filter_by(id=customer_id).first()
+        customer = storage.get(Customer, customer_id)
         if not customer:
             abort(404, message="Customer not found")
         customer.first_name = args['first_name']
@@ -44,17 +50,26 @@ class CustomerResource(Resource):
         customer.phone = args['phone']
         customer.address = args['address']
         customer.status = args['status']
-        # db.session.commit()
-        return jsonify(customer)
+        storage.save()
+        return jsonify(customer), 201
 
-    def delete(self, customer_id):
-        customer = Customer.query.filter_by(id=customer_id).first()
+    def delete(self, customer_id=None):
+        if not customer_id:
+            abort(400, message="Customer ID must be provided for delete request.")
+        customer = storage.get(Customer, customer_id)
         if not customer:
             abort(404, message="Customer not found")
-        # db.session.delete(customer)
-        # db.session.commit()
+        storage.delete(customer)
+        storage.save()
         return '', 204
 
 
+    def get_all(self):
+        customers = storage.all(Customer)
+        return jsonify(customers), 200
 
-api.add_resource(CustomerResource, '/customer/<int:customer_id>')
+    def get_customer_by_id(self, customer_id):
+        customer = storage.get(Customer, customer_id)
+        if not customer:
+            abort(404, message="Customer not found")
+        return jsonify(customer), 200

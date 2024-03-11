@@ -1,8 +1,13 @@
-# models/order.py
-from api.v1.app import db
+"""Order Model"""
 
-class Order(db.Model):
-    __tablename__ = 'Order'
-    id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from models.Base import Base, BaseModel
+import uuid
+
+
+class Order(BaseModel, Base):
+    __tablename__ = 'Orders'
+    id = Column(Integer, primary_key=True)
+    customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
+    date = Column(DateTime, nullable=False)
+    total = Column(Integer, nullable=False)

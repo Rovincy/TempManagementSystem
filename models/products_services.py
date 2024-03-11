@@ -1,10 +1,20 @@
-from api.v1.app import db
+"""Product and service Model"""
+
+import uuid
+from sqlalchemy import Column, String, Integer, Float
+from sqlalchemy.orm import relationship
+
+from models.Base import Base, BaseModel
 
 
-class ProductAndService(db.Model):
-    __tablename__ = 'ProductAndService'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    price_per_unit = db.Column(db.Float, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    payments = db.relationship('Payment', backref='product_and_service', lazy=True)
+class ProductAndService(BaseModel, Base):
+    __tablename__ = 'ProductsAndServices'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    price_per_unit = Column(Float, nullable=False)
+    Stock = Column(Integer, nullable=False)
+    payments = relationship('Payment', backref='product_and_service', lazy=True)
+
+
+    def __init__(self):
+        self.id = uuid.uuid4()

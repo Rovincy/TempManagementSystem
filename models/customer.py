@@ -1,19 +1,26 @@
-from api.v1.app import db
+"""Customer Model"""
+
+from sqlalchemy import Column, String, Integer
+from sqlalchemy.orm import relationship
+import uuid
+
+from models.Base import Base, BaseModel
 
 
-class Customer(db.Model):
-    __tablename__ = 'Customer'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    first_name = db.Column(db.String(100), nullable=False)
-    last_name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(100), nullable=False)
-    address = db.Column(db.String(100), nullable=False)
-    status = db.Column(db.String(100), nullable=False)
+class Customer(BaseModel, Base):
+    __tablename__ = 'Customers'
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(100), nullable=False)
+    last_name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False)
+    phone = Column(String(100), nullable=False)
+    address = Column(String(100), nullable=False)
+    status = Column(String(100), nullable=False)
 
     # Relationships
-    reservations = db.relationship('Reservation', backref='customer', lazy=True)
-    payments = db.relationship('Payment', backref='customer', lazy=True)
+    reservations = relationship('Reservation', backref='customer', lazy=True)
+    payments = relationship('Payment', backref='customer', lazy=True)
+
 
     def __str__(self):
         return f'<Customer {self.first_name} {self.last_name}>'

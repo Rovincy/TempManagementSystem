@@ -1,10 +1,14 @@
-from api.v1.app import db
+"""Review model"""
+
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
+import uuid
+from models.Base import Base, BaseModel
 
 
-class Review(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
-    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
-    comment = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+class Review(BaseModel, Base):
+    id = Column(Integer, primary_key=True)
+    customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
+    room_id = Column(Integer, ForeignKey('room.id'), nullable=False)
+    rating = Column(Integer, nullable=False)
+    comment = Column(String(100), nullable=False)
+    date = Column(DateTime, nullable=False)
