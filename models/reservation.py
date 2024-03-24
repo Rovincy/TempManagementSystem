@@ -10,3 +10,5 @@ class Reservation(db.Model):
     check_in_date = db.Column(db.Date, nullable=False)
     check_out_date = db.Column(db.Date, nullable=False)
     room_number = db.Column(db.String(50), nullable=False)
+
+    room = db.relationship("Room", back_populates="reservation")

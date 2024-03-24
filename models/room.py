@@ -10,3 +10,5 @@ class Room(db.Model):
     price_per_night = db.Column(db.Float, nullable=False)
     is_available = db.Column(db.Boolean, default=True)
     available_date = db.Column(db.Date, nullable=False)
+
+    reservation = db.relationship("Reservation", back_populates="room", uselist=False)

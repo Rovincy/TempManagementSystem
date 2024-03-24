@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import blueprints, request, jsonify
 from Models.Reservation import Reservation
 from database import db
+from Models.Room import Room
 
 reservation_blueprint = blueprints.Blueprint('reservations', __name__, url_prefix='/api/v1/reservations')
 
@@ -16,8 +17,21 @@ def make_reservation():
     check_out_date = datetime.strptime(data['check_out_date'], '%Y-%m-%d').date()
     room_number = data['room_number']
 
+    room = Room.query.filter_by(room_number=room_number).first()
+    if not room:
+        return jsonify({"message": "Room not found"}), 404
+
+    # check room availability
+    if not room.is_available:
+        return jsonify({"message": "Room not available"}), 400
+
+    room.is_available = False
+    room.available_date = check_out_date
+
     reservation = Reservation(guest_name=guest_name, email=email, phone=phone,
-                              check_in_date=check_in_date, check_out_date=check_out_date, room_number=room_number)
+                              check_in_date=check_in_date, check_out_date=check_out_date,
+                              room_number=room_number)
+
     db.session.add(reservation)
     db.session.commit()
 
@@ -40,8 +54,8 @@ def get_reservations():
 
 
 @reservation_blueprint.route('/<int:id>', methods=['GET'])
-def get_reservation(id):
-    reservation = Reservation.query.get(id)
+def get_reservation(guest_name):
+    reservation = Reservation.query.filter_by(guest_name=guest_name)
     if not reservation:
         return jsonify({"message": "Reservation not found"}), 404
 
@@ -58,9 +72,13 @@ def get_reservation(id):
 
 @reservation_blueprint.route('/<int:id>', methods=['DELETE'])
 def cancel_reservation(id):
-    reservation = Reservation.query.get(id)
+    reservation = Reservation.query.get(id).join(Room).filter(Room.room_number == Reservation.room_number).first()
     if not reservation:
         return jsonify({"message": "Reservation not found"}), 404
+
+    reservation.room.is_available = True
+    reservation.room.available_date = None
+
     db.session.delete(reservation)
     db.session.commit()
 

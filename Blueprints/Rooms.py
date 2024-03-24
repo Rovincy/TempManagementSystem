@@ -21,8 +21,8 @@ def get_rooms():
 
 
 @room_blueprint.route('/<int:id>', methods=['GET'])
-def get_room(id):
-    room = Room.query.get(id)
+def get_room(number):
+    room = Room.query.filter_by(room_number=number).first()
     if not room:
         return jsonify({"message": "Room not found"}), 404
 
