@@ -22,7 +22,7 @@ def admin_login():
         password = getenv('ADMIN_PASSWD')
         if request.form['username'] == username and request.form['password'] == password:
             session['admin_logged_in'] = True
-            return redirect('/admin_dashboard')
+            return redirect('/api/admin_dashboard')
         else:
             return render_template('admin_login.html', error='Invalid username or password')
     return render_template('admin_login.html')
