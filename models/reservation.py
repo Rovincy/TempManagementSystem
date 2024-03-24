@@ -2,7 +2,7 @@ from database import db
 
 
 class Reservation(db.Model):
-    __tablename__ = 'Reservation'
+    __tablename__ = 'Reservations'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     guest_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)

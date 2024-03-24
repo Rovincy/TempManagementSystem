@@ -2,11 +2,24 @@ from datetime import datetime
 from flask import blueprints, request, jsonify
 from sqlalchemy import false, true
 
-from Models.Room import Room
+from Models.room import Room
 from database import db
 
 room_blueprint = blueprints.Blueprint('rooms', __name__, url_prefix='/api/v1/rooms')
 
+@room_blueprint.route('/', methods=['POST'])
+def create_room():
+    data = request.json
+    room_number = data['room_number']
+    room_type = data['room_type']
+    room_price = data['room_price']
+
+    room = Room(room_number=room_number, room_type=room_type, room_price=room_price,
+                is_available=true, available_date=datetime.now())
+    db.session.add(room)
+    db.session.commit()
+
+    return jsonify({"message": "Room created successfully"}), 201
 
 @room_blueprint.route('/', methods=['GET'])
 def get_rooms():

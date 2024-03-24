@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask import blueprints, request, jsonify
-from Models.Reservation import Reservation
+from Models.reservation import Reservation
 from database import db
-from Models.Room import Room
+from Models.room import Room
 
 reservation_blueprint = blueprints.Blueprint('reservations', __name__, url_prefix='/api/v1/reservations')
 
